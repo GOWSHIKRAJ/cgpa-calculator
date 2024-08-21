@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>CGPA/GPA Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-image: url('image2.jpg');
+            background-size: cover;
+            background-size: cover; 
+            background-attachment: fixed; 
+            background-position: top left; 
+            background-repeat: no-repeat; 
+            background-size: 100% 100%;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9); 
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin-top: 0;
+            padding: 10px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        select, input[type="checkbox"] {
+            margin-left: 10px;
+        }
+
+        .subject {
+            margin-bottom: 15px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        fieldset {
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        legend {
+            padding: 0 10px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .subject label {
+            font-size: 16px;
+        }
+
+        .subject select {
+            font-size: 16px;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+}
+.semester.sem1 h3 {
+    color: #ff5733;
+}
+
+.semester.sem2 h3 {
+    color: #8400ff;
+}
+
+.semester.sem3 h3 {
+    color: #ff2600; 
+}
+
+.semester.sem4 h3 {
+    color: #ff33ec; 
+}
+
+.semester.sem5 h3 {
+    color: #ff9a33;
+}
+
+.semester.sem6 h3 {
+    color: #c833ff; 
+}
+
+.semester.sem7 h3 {
+    color: #ff0000a7; 
+}
+
+.semester.sem8 h3 {
+    color: #ff9500; 
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>DEPARTMENT OF IT (REGULATION-2023)</h1>
+        <h1>CGPA/GPA Calculator</h1>
+        <label for="mode">Select Mode:</label>
+        <select id="mode">
+            <option value="gpa">GPA</option>
+            <option value="cgpa">CGPA</option>
+        </select>
+
+        <fieldset>
+            <legend>Select Semesters:</legend>
+            <label><input type="checkbox" name="semester" value="1"> Semester 1</label>
+            <label><input type="checkbox" name="semester" value="2"> Semester 2</label>
+            <label><input type="checkbox" name="semester" value="3"> Semester 3</label>
+            <label><input type="checkbox" name="semester" value="4"> Semester 4</label>
+            <label><input type="checkbox" name="semester" value="5"> Semester 5</label>
+            <label><input type="checkbox" name="semester" value="6"> Semester 6</label>
+            <label><input type="checkbox" name="semester" value="7"> Semester 7</label>
+            <label><input type="checkbox" name="semester" value="8"> Semester 8</label>
+        </fieldset>
+
+        <button onclick="displaySubjects()">Load Subjects</button>
+        <button onclick="calculate()">Calculate</button>
+
+        <div id="subjects-container"></div>
+        <p id="result"></p>
+    </div>
+
+    <script>
+function calculate() {
+    const mode = document.getElementById("mode").value;
+    const selectedSemesters = document.querySelectorAll('input[name="semester"]:checked');
+    let overallCredits = 0;
+    let overallPoints = 0;
+    const results = [];
+    let allGradesSelected = true;
+
+    selectedSemesters.forEach(semester => {
+        const semValue = semester.value;
+        const gradeInputs = document.querySelectorAll(`.semester:nth-of-type(${semValue}) select`);
+        let totalCredits = 0;
+        let totalPoints = 0;
+
+        gradeInputs.forEach(input => {
+            const grade = input.value;
+            if (grade) {
+                const credits = parseInt(input.getAttribute('data-credits'));
+                const points = getPoints(grade);
+                totalCredits += credits;
+                totalPoints += points * credits;
+            } else {
+                allGradesSelected = false;
+            }
+        });
+
+        if (totalCredits > 0) {
+            const gpa = totalPoints / totalCredits;
+            if (mode === "gpa") {
+                results.push(`Semester ${semValue} GPA: ${gpa.toFixed(2)}`);
+            }
+            overallCredits += totalCredits;
+            overallPoints += totalPoints;
+        }
+    });
+
+    if (!allGradesSelected) {
+        alert("Please select a grade for all subjects in each selected semester.");
+        return;
+    }
+
+    if (mode === "cgpa" && overallCredits > 0) {
+        const cgpa = overallPoints / overallCredits;
+        document.getElementById("result").textContent = `CGPA: ${cgpa.toFixed(2)}`;
+    } else if (mode === "gpa") {
+        document.getElementById("result").textContent = results.join("\n");
+    }
+}
+
+function getPoints(grade) {
+    switch (grade) {
+        case 'O': return 10;
+        case 'A+': return 9;
+        case 'A': return 8;
+        case 'B+': return 7;
+        case 'B': return 6;
+        case 'C': return 5;
+        case 'U': return 0;
+        default: return 0;
+    }
+}
+
+
+function displaySubjects() {
+    const selectedSemesters = document.querySelectorAll('input[name="semester"]:checked');
+    const subjectsContainer = document.getElementById("subjects-container");
+    subjectsContainer.innerHTML = "";
+
+    selectedSemesters.forEach(semester => {
+        const semValue = semester.value;
+        const semDiv = document.createElement("div");
+        semDiv.classList.add("semester");
+        semDiv.innerHTML = `<h3 style="color: ${semValue % 2 === 0 ? 'blue' : 'green'};">Semester ${semValue}</h3>`;
+
+        const subjects = getSubjectsBySemester(semValue);
+        subjects.forEach(subject => {
+            const subjectDiv = document.createElement("div");
+            subjectDiv.classList.add("subject");
+            subjectDiv.innerHTML = `
+                <label>${subject.name} (${subject.credits} credits)</label>
+                <select data-credits="${subject.credits}">
+                    <option value="">Select Grade</option>
+                    <option value="O">O</option>
+                    <option value="A+">A+</option>
+                    <option value="A">A</option>
+                    <option value="B+">B+</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="U">U</option>
+                </select>
+            `;
+            semDiv.appendChild(subjectDiv);
+        });
+
+        subjectsContainer.appendChild(semDiv);
+    });
+}
+
+function getSubjectsBySemester(semester) {
+    const subjects = {
+        1: [
+            { name: "Communicative English", credits: 3 },
+            { name: "Engineering Chemistry", credits: 3 },
+            { name: "Engineering Physics", credits: 3 },
+            { name: "Matrices and Calculus", credits: 4 },
+            { name: "Python Programming", credits: 3 },
+            { name: "Heritage of Tamil", credits: 1 },
+            { name: "Physics and Chemistry Lab", credits: 2 },
+            { name: "Python Lab", credits: 2 },
+            { name: "Communicative English Lab", credits: 1 }
+        ],
+        2: [
+            { name: "Technical English", credits: 3 },
+            { name: "Statistical and Numerical Method", credits: 4 },
+            { name: "Physics for Computer Science Engineering", credits: 3 },
+            { name: "Engineering Graphics", credits: 4 },
+            { name: "Programming in C", credits: 3 },
+            { name: "Tamil and Technology", credits: 1 },
+            { name: "Environmental Science and Sustainability", credits: 2 },
+            { name: "Technical English Lab", credits: 1 },
+            { name: "Programming in C Lab", credits: 2 },
+            { name: "Engineering Practices", credits: 2 }
+        ],
+        3: [
+            { name: "Digital Principles and Computer Organization", credits: 4 },
+            { name: "Foundation of Data Science", credits: 3 },
+            { name: "Data Structure", credits: 3 },
+            { name: "Object Oriented Programming Language", credits: 3 },
+            { name: "Operating System", credits: 3 },
+            { name: "Data Science Laboratory", credits: 2 },
+            { name: "Data Structure Laboratory", credits: 2 },
+            { name: "Object Oriented Programming Laboratory", credits: 2 },
+            { name: "Quantitative Aptitude and Verbal Reasoning", credits: 1 }
+        ],
+        4: [
+            { name: "Discrete Mathematics", credits: 4 },
+            { name: "Design and Analysis of Algorithms", credits: 4 },
+            { name: "Software Engineering", credits: 3 },
+            { name: "Database Management", credits: 3 },
+            { name: "Java Programming", credits: 3 },
+            { name: "NCC Credit Course Level 2", credits: 3 },
+            { name: "Database Management System Laboratory", credits: 2 },
+            { name: "Java Programming Laboratory", credits: 2 },
+            { name: "Quantitative Aptitude and Behavior Skills", credits: 1 }
+        ],
+        5: [
+        { name: "Data Communication and Networking", credits: 4 },
+                { name: "Full Stack Web Development", credits: 3 },
+                { name: "Web Essentials", credits: 4 },
+                { name: "Computer Design", credits: 3 },
+                { name: "Open Elective 1", credits: 3 },
+                { name: "Professional Elective 1", credits: 3 },
+                { name: "Mandatory Course 1", credits: 0 },
+                { name: "Full Stack Development Laboratory", credits: 2 },
+                { name: "Quantitative Aptitude and Communication Skills", credits: 1 }
+        ],
+        6: [
+            
+        { name: "Artificial Intelligence and Machine Learning", credits: 4 },
+                { name: "Mobile Computing", credits: 3 },
+                { name: "Open Elective 2", credits: 3 },
+                { name: "Professional Elective 2", credits: 3 },
+                { name: "Professional Elective 3", credits: 3 },
+                { name: "Professional Elective 4", credits: 3 },
+                { name: "Mandatory Course 2", credits: 0 },
+                { name: "MCC and Credit Level Course", credits: 3 },
+                { name: "Mobile Application Development Laboratory", credits: 2 },
+                { name: "Comprehension", credits: 1 },
+                { name: "Quantitative Aptitude and Soft Skills", credits: 1 }
+        ],
+        7: [
+        { name: "Human Value Ethics", credits: 2 },
+                { name: "Elective Management", credits: 3 },
+                { name: "Open Elective 3", credits: 3 },
+                { name: "Professional Elective 5", credits: 3 },
+                { name: "Professional Elective 6", credits: 3 },
+                { name: "Summer Internship", credits: 2 }
+        ],
+        8: [
+        { name: "Project Work", credits: 10 }
+        ]
+    };
+
+    return subjects[semester] || [];
+}
+
+    </script>
+</body>
+</html>
